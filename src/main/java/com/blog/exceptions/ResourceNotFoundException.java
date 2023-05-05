@@ -9,7 +9,7 @@ public class ResourceNotFoundException extends RuntimeException{
 	String key;
 	Integer value;
 	public ResourceNotFoundException(String name, String key, Integer userId) {
-		super(String.format("%s with %s : %L", name,key,userId));
+		super(String.format("%s not found with %s : %s", name,key,userId));
 		this.name = name;
 		this.key = key;
 		this.value = userId;

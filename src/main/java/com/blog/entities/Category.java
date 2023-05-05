@@ -14,28 +14,28 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Data
+@Entity
+@Table(name = "categories")
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@Entity
-@Table(name = "users")
-public class User {
+public class Category {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "user_id")
-	private int id;
-	@Column(name = "user_name", length = 100, nullable = false)
-	private String name;
-	private String email;
-	private String password;
-	private String about;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer categoryId;
+	@Column(name = "title", nullable = false)
+	private String categoryTitle;
+	@Column(name = "description", nullable = false)
+	private String categoryDescription;
 
-	// @JsonManagedReference
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	//@JsonManagedReference
+	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Post> post = new ArrayList<>();
 
 }
