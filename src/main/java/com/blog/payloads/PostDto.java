@@ -5,7 +5,12 @@ import java.util.Date;
 import com.blog.entities.Category;
 import com.blog.entities.User;
 import lombok.Data;
-@Data
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+@Getter
+@Setter
+@NoArgsConstructor
 public class PostDto {
 	private Integer postId;
 	private String title;
