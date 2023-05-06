@@ -1,10 +1,15 @@
 package com.blog.controllers;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,12 +19,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.blog.config.AppConstants;
 import com.blog.payloads.ApiResponse;
+import com.blog.payloads.FileResponse;
 import com.blog.payloads.PageResponse;
 import com.blog.payloads.PostDto;
+import com.blog.services.FileService;
 import com.blog.services.PostService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 @RestController
@@ -27,6 +37,10 @@ import jakarta.validation.Valid;
 public class PostControllers {
 	@Autowired
 	private PostService postService;
+	@Autowired
+	private FileService fileService;
+	@Value("${project.image}")
+	private String path;
 
 	@PostMapping("/user/{userId}/category/{categoryId}")
 
@@ -52,10 +66,10 @@ public class PostControllers {
 
 	@GetMapping("/all")
 	public ResponseEntity<PageResponse> getAllPost(
-			@RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
-			@RequestParam(value = "pageSize", defaultValue = "1", required = false) Integer pageSize,
-			@RequestParam(value = "sortBy", defaultValue = "title", required = false) String sortBy,
-			@RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir) {
+			@RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+			@RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+			@RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
+			@RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_DIR, required = false) String sortDir) {
 
 		PageResponse postList = this.postService.findAllPost(pageNumber, pageSize, sortBy, sortDir);
 		return new ResponseEntity<PageResponse>(postList, HttpStatus.OK);
@@ -71,6 +85,7 @@ public class PostControllers {
 	public ResponseEntity<PostDto> updatePost(@Valid @RequestBody PostDto postDto,
 			@PathVariable("postId") Integer postId) {
 		PostDto postDto2 = this.postService.updatePost(postDto, postId);
+
 		return ResponseEntity.ok(postDto2);
 
 	}
@@ -86,6 +101,25 @@ public class PostControllers {
 		List<PostDto> postList = this.postService.searchPosts(keyword);
 		return new ResponseEntity<List<PostDto>>(postList, HttpStatus.OK);
 
+	}
+
+	@PostMapping("/images/{postId}")
+	public ResponseEntity<PostDto> uploadImage(@RequestParam MultipartFile image,
+			@PathVariable("postId") Integer postId) throws IOException {
+		PostDto postDto = this.postService.findPostById(postId);
+		String fileName = this.fileService.uploadImage(path, image);
+
+		postDto.setImageName(fileName);
+		PostDto postDto2 = this.postService.updatePost(postDto, postId);
+		return new ResponseEntity<PostDto>(postDto2, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/getimage/{image}", produces = MediaType.IMAGE_PNG_VALUE)
+	public void getImage(@PathVariable("image") String image, HttpServletResponse httpServletResponse)
+			throws IOException {
+		InputStream fileName = this.fileService.getResources(path, image);
+		httpServletResponse.setContentType(MediaType.IMAGE_PNG_VALUE);
+		StreamUtils.copy(fileName, httpServletResponse.getOutputStream());
 	}
 
 }
