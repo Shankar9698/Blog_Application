@@ -3,6 +3,7 @@ package com.blog.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.blog.payloads.PostDto;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -36,8 +37,10 @@ public class Category {
 	@Column(name = "description", nullable = false)
 	private String categoryDescription;
 
-	//@JsonManagedReference
-	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Post> post = new ArrayList<>();
-
+	/*
+	 * @JsonManagedReference
+	 * 
+	 * @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch =
+	 * FetchType.LAZY) private List<Post> post = new ArrayList<>();
+	 */
 }
