@@ -1,5 +1,6 @@
 package com.blog.exceptions;
 
+import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +30,17 @@ public class GlobalException {
 			map.put(key, value);
 		});
 		return new ResponseEntity<Map<String,String>>(map,HttpStatus.BAD_REQUEST);
+	}
+	@ExceptionHandler(LoginException.class)
+	public ResponseEntity<Map<String, String>> loginException(Exception ex){
+		String message=ex.getMessage();
+		ApiResponse apiResponse=new ApiResponse(message, false);
+		return new ResponseEntity(apiResponse,HttpStatus.BAD_REQUEST);
+		
+	}
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ApiResponse> accessDenied(){
+		return new ResponseEntity<ApiResponse>(new ApiResponse("UnAuthorized request", false), HttpStatus.FORBIDDEN);
 	}
 
 }

@@ -25,7 +25,7 @@ public class BlogAppApisApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		System.out.println(this.passwordEncoder.encode("12345"));
+		System.out.println("password encoder = "+this.passwordEncoder.encode("12345"));
 		// password for 12345: bcrypt is generated in consol-> update that in db; send
 		// 12345 in postman
 

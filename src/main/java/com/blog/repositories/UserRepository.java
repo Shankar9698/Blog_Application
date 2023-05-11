@@ -8,4 +8,5 @@ import com.blog.entities.User;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 	Optional<User> findByEmail(String email); //email is the username
+	User findByPassword(String password);
 }

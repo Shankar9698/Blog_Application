@@ -1,14 +1,18 @@
 package com.blog.payloads;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import lombok.ToString;
+@ToString
 @Setter
 @Getter
 @NoArgsConstructor
@@ -20,6 +24,7 @@ public class UserDto {
 	private String name;
 	@Email(message="invalid email format")
 	private String email;
+	@JsonIgnore// to ignore password: to ignore any property use @JsonIgnore
 	@NotEmpty
 	@Size(min=3, max=10, message="password should contains min 3 character and max 10 character")
 	private String password;
