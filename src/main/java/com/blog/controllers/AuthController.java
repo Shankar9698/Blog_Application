@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blog.exceptions.LoginException;
 import com.blog.payloads.JwtAuthRequest;
 import com.blog.payloads.JwtAuthResponse;
+import com.blog.payloads.UserDto;
 import com.blog.repositories.UserRepository;
+import com.blog.securities.CustomUserDetailService;
 import com.blog.securities.JwtTokenHelper;
+import com.blog.services.UserService;
 
 @RestController
 @RequestMapping("/api/v1/")
@@ -30,6 +32,10 @@ public class AuthController {
 	private UserDetailsService userDetailsService;
 	@Autowired
 	private AuthenticationManager authenticationManager;
+	@Autowired
+	private CustomUserDetailService customUserDetailService;
+	@Autowired
+	private UserService userService;
 
 	@PostMapping("/login")
 	public ResponseEntity<JwtAuthResponse> createToken(@RequestBody JwtAuthRequest jwtAuthRequest) throws Exception {
@@ -37,7 +43,7 @@ public class AuthController {
 		this.authenticate1(jwtAuthRequest.getUserName(), jwtAuthRequest.getPassword());
 
 		UserDetails userDetails = this.userDetailsService.loadUserByUsername(jwtAuthRequest.getUserName());
-
+		this.customUserDetailService.checkPassword(jwtAuthRequest.getPassword());
 		String token = this.jwtTokenHelper.generateToken(userDetails);
 
 		JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
@@ -45,8 +51,14 @@ public class AuthController {
 		return new ResponseEntity<JwtAuthResponse>(jwtAuthResponse, HttpStatus.OK);
 
 	}
+	@PostMapping("/register")
+	public ResponseEntity<UserDto> registerNewUser(@RequestBody UserDto userDto){
+		UserDto newRegisteredUser=this.userService.registerNewUser(userDto);
+		return new ResponseEntity<UserDto>(newRegisteredUser,HttpStatus.CREATED);
+	}
 
 	private void authenticate1(String userName, String password) throws Exception {
+
 		try {
 			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 					userName, password);
@@ -59,5 +71,6 @@ public class AuthController {
 		}
 
 	}
+	
 
 }

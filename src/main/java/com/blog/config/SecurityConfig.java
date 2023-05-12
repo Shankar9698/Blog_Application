@@ -35,7 +35,7 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf().disable().authorizeHttpRequests().// after ant matcher .has->we can specify options accordingly
-				antMatchers("/api/v1/login").permitAll().// antMatchers(HttpMethod.GET).permitAll()-> all get methods
+				antMatchers("/api/v1/**").permitAll().// antMatchers(HttpMethod.GET).permitAll()-> all get methods
 															// will be publicly accessable
 				anyRequest().authenticated().and().exceptionHandling()
 				.authenticationEntryPoint(this.jwtAuthenticationEntryPoint).and().sessionManagement()

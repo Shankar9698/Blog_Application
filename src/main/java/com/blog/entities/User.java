@@ -50,6 +50,7 @@ public class User implements UserDetails {
 	@Column(name = "user_name", length = 100, nullable = false)
 	private String name;
 	private String email;
+	//@Column(nullable = true)
 	private String password;
 	private String about;
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
